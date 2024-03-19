@@ -138,12 +138,12 @@ const Navbar = () => {
             <div>
               <button
                 onClick={handleLoginOpen}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg"
+                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg mr-10"
               >
                 Login
               </button>
             </div>
-            <div className='w-10 bg-red-400 rounded-3xl mx-6'></div>
+            {/* <div className='w-10 bg-red-400 rounded-3xl mx-6'></div> */}
           </div>
         )}
       </nav>

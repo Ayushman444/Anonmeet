@@ -13,6 +13,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Modal from '@mui/material/Modal';
 import useLogin from '../../hooks/useLogin';
 import { useNavigate } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
 function Login({ open, handleClose,onSignupClick,}) {
   const navigate = useNavigate();
@@ -86,7 +87,7 @@ function Login({ open, handleClose,onSignupClick,}) {
                 id="username"
                 label="User Name"
                 name="username"
-                InputProps={{ style: { color: 'white' } }}
+                InputProps={{ style: { color: 'black' } }}
                 autoFocus
               />
               <TextField
@@ -109,7 +110,7 @@ function Login({ open, handleClose,onSignupClick,}) {
               </Button>
               <Grid container>
                 <Grid item xs>
-                  <Link href="#" variant="body2">
+                  <Link href="http://localhost:3000/forgetpassword">
                     Forgot password?
                   </Link>
                 </Grid>

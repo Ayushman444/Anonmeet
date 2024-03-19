@@ -2,6 +2,10 @@ import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import generateTokenAndSetCookie from "../utils/generateToken.js";
 import jwt from "jsonwebtoken";
+import { mailSender } from "../utils/MailSender.js";
+
+
+
 
 const generatetoken = (userId) => {
 	const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -109,99 +113,109 @@ export const logout = (req, res) => {
 	}
 };
 
-// export const forgetPassword = async (req,res) =>{
-// 	try{
-// 		const {email} = req.body;
-// 		const user = await user.findOne({ email });
+
+function generateRandom8DigitNumber() {
+	
+	const randomNumber = Math.floor(Math.random() * 90000000) + 10000000;
+	return randomNumber.toString(); 
+  }
+export async function forgetPassword (req,res){
+	try{
+		const {email} = req.body;
+		console.log(email)
+		const user = await User.findOne({ email });
 		
-// 		if (!user) {
-// 			return res.json({
-// 				success: false,
-// 				message: "Your email is not registered with us",
-// 			});
-// 		}
 		
-// 		//generate token
-// 		const token = crypto.randomUUID();
-// 		//update user by adding token and expire time
-// 		const updatedDetails = await User.findOneAndUpdate(
-// 			{ email: email },
-// 			{
-// 				token: token,
-// 				resetPasswordExpires: Date.now() + 5 * 60 * 1000,
-// 			},
-// 			{ new: true }
-// 		);
+		if (!user) {
+			return res.json({
+				success: false,
+				message: "Your email is not registered with us",
+			});
+		}
+		
+		
+		// const token = crypto.randomUUID();
+		const token = generateRandom8DigitNumber();
+		
+		//update user by adding tokenand expire time
+		const updatedDetails = await User.findOneAndUpdate(
+			{ email: email },
+			{
+				token: token,
+				resetPasswordExpires: Date.now() + 5 * 60 * 1000,
+			},
+			{ new: true }
+		);
 
-// 		//generate frontend link for password reset
-// 		const url = `http://localhost:3000/update-password/${token}`;
+		
+		const url = `http://localhost:3000/resetpassword/${token}`;
 
-// 		//send mail containing url
-// 		await mailSender(
-// 		email,
-// 		"Password Reset Link",
-// 		`Password Reset Link : ${url} `
-// 		);
+		
+		await mailSender(
+		email,
+		"Password Reset Link",
+		`Password Reset Link : ${url} `
+		);
 
-// 		//return response
-// 		return res.json({
-// 		success: true,
-// 		message:
-// 			"Email sent successfully, please check email and change password.",
-// 			token,
-// 		});
+		
+		return res.json({
+		success: true,
+		message:
+			"Email sent successfully, please check email and change password.",
+			token,
+		});
 
-// 	}catch(error){
-// 		console.log("Error in forgetPassword controller", error.message);
-// 		res.status(500).json({error: "Internal server Error"});
-// 	}
-// }
+	}catch(error){
+		console.log("Error in forgetPassword controller", error.message);
+		res.status(500).json({error: "Internal server Error"});
+	}
+}
 
 
-// exports.resetPassword = async (req, res) => {
-// 	try {
-// 	  const { password, confirmPassword, token } = req.body;
+export const resetPassword = async (req, res) => {
+	try {
+	  const { password, confirmPassword, token } = req.body;
 
-// 	  if (password !== confirmPassword) {
-// 		return res.json({
-// 		  success: false,
-// 		  message: "Password is not matching with confirm password.",
-// 		});
-// 	  }
-// 	  const userDetails = await User.findOne({ token: token });
+	  if (password !== confirmPassword) {
+		return res.json({
+		  success: false,
+		  message: "Password is not matching with confirm password.",
+		});
+	  }
+	  const userDetails = await User.findOne({ token: token });
 
-// 	  if (!userDetails) {
-// 		return res.json({
-// 		  success: false,
-// 		  message: "Token is invalid",
-// 		});
-// 	  }
+	  if (!userDetails) {
+		return res.json({
+		  success: false,
+		  message: "Token is invalid",
+		});
+	  }
 
-// 	  if (userDetails.resetPasswordExpires < Date.now()) {
-// 		return res.json({
-// 		  success: false,
-// 		  message: "Reset password link has expired",
-// 		});
-// 	  }
+	  if (userDetails.resetPasswordExpires < Date.now()) {
+		return res.json({
+		  success: false,
+		  message: "Reset password link has expired",
+		});
+	  }
 
-// 	  const hashedPassword = await bcrypt.hash(password, 10);
+	  const hashedPassword = await bcrypt.hash(password, 10);
 
-// 	  await User.findOneAndUpdate(
-// 		{ token: token },
-// 		{ password: hashedPassword },
-// 		{ new: true }
-// 	  );
+	  await User.findOneAndUpdate(
+		{ token: token },
+		{ password: hashedPassword },
+		{ new: true }
+	  );
   
 
-// 	  return res.status(200).json({
-// 		success: true,
-// 		message: "Reset password successfull",
-// 	  });
-// 	} catch (e) {
-// 		console.log(e);
-// 		return res.status(500).json({
-// 		  success:false,
-// 		  message:"Cannot change the password , something went wrong in reset password controller , please try again."
-// 		})
-// 	}
-//   };
+	  return res.status(200).json({
+		success: true,
+		message: "Reset password successfull",
+	  });
+	} catch (e) {
+		console.log(e);
+		return res.status(500).json({
+		  success:false,
+		  message:"Cannot change the password , something went wrong in reset password controller , please try again."
+		})
+	}
+  };

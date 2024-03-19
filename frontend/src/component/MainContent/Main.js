@@ -43,7 +43,7 @@ export default function Main({ selectedItem }) {
         ))
       ) : (
         <div className="flex justify-center items-center h-screen">
-        <p className="text-2xl font-bold text-white">No posts found</p>
+        <p className="text-2xl font-bold text-white">Login to see posts</p>
         </div>
       )}
     </div>

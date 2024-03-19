@@ -1,8 +1,8 @@
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer"
 
-const mailSender = async (email, title, body) => {// with the help of this function we send mail of otp;      
+export async function mailSender (email, title, body) {      
     try{
-            let transporter = nodemailer.createTransport({// we send mail with the help of transporter and here MAIL_USER , MAIL_PASS contain app password of that email which send email 
+            let transporter = nodemailer.createTransport({
                 service:'gmail',
                 port:465,
                 secure:true,
@@ -27,5 +27,3 @@ const mailSender = async (email, title, body) => {// with the help of this funct
     }
 }
 
-
-module.exports = mailSender;
